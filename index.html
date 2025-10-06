@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Oyunu - Chrome Dino Runner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🦖 Dino Runner</h1>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <span>Skor:</span>
+                <span id="score">0</span>
+            </div>
+            <div class="score-item">
+                <span>En Yüksek:</span>
+                <span id="highScore">0</span>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <canvas id="gameCanvas"></canvas>
+            
+            <!-- Start Screen -->
+            <div id="startScreen" class="overlay">
+                <h2>Dino Runner'a Hoş Geldiniz!</h2>
+                <p>🎮 Engelleri atlamak için <strong>SPACE</strong> veya <strong>↑</strong> tuşuna basın</p>
+                <p>🦆 Eğilmek için <strong>↓</strong> tuşunu kullanın</p>
+                <p>⏸️ Duraklatmak için <strong>P</strong> tuşuna basın</p>
+                <button id="startBtn" class="game-btn">Oyuna Başla</button>
+            </div>
+
+            <!-- Game Over Screen -->
+            <div id="gameOver" class="overlay" style="display: none;">
+                <h2>Oyun Bitti!</h2>
+                <p>Skorunuz: <span id="finalScore">0</span></p>
+                <button id="restartBtn" class="game-btn">Tekrar Oyna</button>
+            </div>
+        </div>
+
+        <div class="controls-info">
+            <p><strong>Kontroller:</strong> SPACE/↑ (Zıpla) | ↓ (Eğil) | P (Duraklat) | Fareyle Tıklayarak da Oynayabilirsiniz</p>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
