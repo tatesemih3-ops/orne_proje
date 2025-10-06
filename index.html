@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome Dino Oyunu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🦖 Chrome Dino Oyunu</h1>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <span class="label">Skor:</span>
+                <span id="score" class="score-value">0</span>
+            </div>
+            <div class="score-item">
+                <span class="label">En Yüksek:</span>
+                <span id="highScore" class="score-value">0</span>
+            </div>
+        </div>
+        
+        <div class="game-container">
+            <canvas id="gameCanvas"></canvas>
+            
+            <!-- Start Screen -->
+            <div id="startScreen" class="overlay">
+                <div class="message-box">
+                    <h2>🦖 Dino Oyunu</h2>
+                    <p>Zıplamak için <strong>SPACE</strong> veya <strong>↑</strong> tuşuna basın</p>
+                    <p>Eğilmek için <strong>↓</strong> tuşuna basın</p>
+                    <p>Duraklatmak için <strong>P</strong> tuşuna basın</p>
+                    <button id="startBtn" class="game-btn">Oyunu Başlat</button>
+                </div>
+            </div>
+            
+            <!-- Game Over Screen -->
+            <div id="gameOver" class="overlay">
+                <div class="message-box">
+                    <h2>Oyun Bitti!</h2>
+                    <p>Skorunuz: <span id="finalScore">0</span></p>
+                    <button id="restartBtn" class="game-btn">Tekrar Oyna</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls-info">
+            <div class="control-item">
+                <kbd>SPACE</kbd> veya <kbd>↑</kbd> - Zıpla
+            </div>
+            <div class="control-item">
+                <kbd>↓</kbd> - Eğil
+            </div>
+            <div class="control-item">
+                <kbd>P</kbd> - Duraklat
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
