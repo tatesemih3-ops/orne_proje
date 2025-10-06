@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
             display: flex;
             justify-content: center;
@@ -53,13 +53,7 @@
             bottom: 0;
             width: 100%;
             height: 20px;
-            background: repeating-linear-gradient(
-                90deg,
-                #333 0px,
-                #333 20px,
-                #555 20px,
-                #555 40px
-            );
+            background: repeating-linear-gradient(90deg, #333 0px, #333 20px, #555 20px, #555 40px);
         }
 
         .player {
@@ -70,7 +64,6 @@
             height: 50px;
             background: #ff6b6b;
             border-radius: 5px;
-            transition: bottom 0.1s linear;
         }
 
         .player::before {
@@ -103,7 +96,6 @@
             height: 50px;
             background: #4ecdc4;
             border-radius: 5px;
-            animation: moveObstacle 2s linear infinite;
         }
 
         .obstacle::before {
@@ -119,12 +111,17 @@
         }
 
         @keyframes moveObstacle {
-            0% {
-                right: -30px;
-            }
-            100% {
-                right: 100%;
-            }
+            0% { right: -30px; }
+            100% { right: 100%; }
+        }
+
+        @keyframes jump {
+            0%, 100% { bottom: 70px; }
+            50% { bottom: 200px; }
+        }
+
+        .jumping {
+            animation: jump 0.5s ease-in-out;
         }
 
         .score-board {
@@ -192,47 +189,16 @@
             transform: scale(1.05);
         }
 
-        .restart-btn:active {
-            transform: scale(0.95);
-        }
-
         .high-score {
             color: #ffd700;
             font-size: 1.1em;
             margin-top: 10px;
         }
-
-        .jumping {
-            animation: jump 0.5s ease-in-out;
-        }
-
-        @keyframes jump {
-            0%, 100% {
-                bottom: 70px;
-            }
-            50% {
-                bottom: 200px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .game-area {
-                height: 250px;
-            }
-            
-            .controls {
-                font-size: 0.9em;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>Dino Oyunu</h1>
+        <h1>DINO OYUNU</h1>
         
         <div class="game-area" id="gameArea">
             <div class="player" id="player"></div>
@@ -240,52 +206,49 @@
             <div class="game-over" id="gameOver">
                 <h2>Oyun Bitti!</h2>
                 <p>Skorunuz: <span id="finalScore">0</span></p>
-                <p class="high-score">En Yüksek Skor: <span id="displayHighScore">0</span></p>
+                <p class="high-score">En Yuksek Skor: <span id="displayHighScore">0</span></p>
                 <button class="restart-btn" onclick="restartGame()">Tekrar Oyna</button>
             </div>
         </div>
 
         <div class="score-board">
             <div class="score">Skor: <span id="score">0</span></div>
-            <div class="score">En Yüksek: <span id="highScore">0</span></div>
+            <div class="score">En Yuksek: <span id="highScore">0</span></div>
         </div>
 
         <div class="controls">
-            Zıplamak için <strong>SPACE</strong> veya <strong>Yukari OK</strong> tuşuna basın
+            Ziplamak icin <strong>SPACE</strong> veya <strong>YUKARI OK</strong> tusuna basin
             <br>
             Mobilde ekrana dokunun
         </div>
     </div>
 
     <script>
-        const player = document.getElementById('player');
-        const gameArea = document.getElementById('gameArea');
-        const gameOverScreen = document.getElementById('gameOver');
-        const scoreDisplay = document.getElementById('score');
-        const finalScoreDisplay = document.getElementById('finalScore');
-        const highScoreDisplay = document.getElementById('highScore');
-        const displayHighScoreElement = document.getElementById('displayHighScore');
+        var player = document.getElementById('player');
+        var gameArea = document.getElementById('gameArea');
+        var gameOverScreen = document.getElementById('gameOver');
+        var scoreDisplay = document.getElementById('score');
+        var finalScoreDisplay = document.getElementById('finalScore');
+        var highScoreDisplay = document.getElementById('highScore');
+        var displayHighScoreElement = document.getElementById('displayHighScore');
 
-        let isJumping = false;
-        let isGameOver = false;
-        let score = 0;
-        let highScore = 0;
-        let obstacleInterval;
-        let scoreInterval;
-        let gameSpeed = 2000;
-        let obstacles = [];
+        var isJumping = false;
+        var isGameOver = false;
+        var score = 0;
+        var highScore = 0;
+        var obstacleInterval;
+        var scoreInterval;
+        var gameSpeed = 2000;
+        var obstacles = [];
 
-        // localStorage'ı güvenli şekilde kullan
         try {
             highScore = localStorage.getItem('dinoHighScore') || 0;
         } catch (e) {
-            console.log('localStorage kullanılamıyor, varsayılan değer kullanılıyor');
+            highScore = 0;
         }
 
-        // Yüksek skoru göster
         highScoreDisplay.textContent = highScore;
 
-        // Oyun başlat
         function startGame() {
             score = 0;
             isGameOver = false;
@@ -294,16 +257,16 @@
             scoreDisplay.textContent = score;
             gameOverScreen.style.display = 'none';
             
-            // Varolan engelleri temizle
-            document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+            var oldObstacles = document.querySelectorAll('.obstacle');
+            for (var i = 0; i < oldObstacles.length; i++) {
+                oldObstacles[i].remove();
+            }
             
-            // Skor artırma
-            scoreInterval = setInterval(() => {
+            scoreInterval = setInterval(function() {
                 if (!isGameOver) {
                     score++;
                     scoreDisplay.textContent = score;
                     
-                    // Oyunu zorlaştır
                     if (score % 100 === 0 && gameSpeed > 1000) {
                         gameSpeed -= 100;
                         clearInterval(obstacleInterval);
@@ -312,39 +275,33 @@
                 }
             }, 100);
             
-            // Engel oluşturma
             createObstacles();
         }
 
-        // Engel oluştur
         function createObstacles() {
-            obstacleInterval = setInterval(() => {
+            obstacleInterval = setInterval(function() {
                 if (!isGameOver) {
-                    const obstacle = document.createElement('div');
+                    var obstacle = document.createElement('div');
                     obstacle.classList.add('obstacle');
-                    obstacle.style.animation = `moveObstacle ${gameSpeed / 1000}s linear infinite`;
+                    obstacle.style.animation = 'moveObstacle ' + (gameSpeed / 1000) + 's linear infinite';
                     gameArea.appendChild(obstacle);
                     obstacles.push(obstacle);
                     
-                    // Çarpışma kontrolü
-                    const checkCollision = setInterval(() => {
-                        const playerRect = player.getBoundingClientRect();
-                        const obstacleRect = obstacle.getBoundingClientRect();
+                    var checkCollision = setInterval(function() {
+                        var playerRect = player.getBoundingClientRect();
+                        var obstacleRect = obstacle.getBoundingClientRect();
                         
-                        if (
-                            playerRect.left < obstacleRect.right &&
+                        if (playerRect.left < obstacleRect.right &&
                             playerRect.right > obstacleRect.left &&
                             playerRect.bottom > obstacleRect.top &&
-                            playerRect.top < obstacleRect.bottom
-                        ) {
+                            playerRect.top < obstacleRect.bottom) {
                             gameOver();
                             clearInterval(checkCollision);
                         }
                         
-                        // Engel ekrandan çıktıysa temizle
                         if (obstacleRect.right < 0) {
                             obstacle.remove();
-                            obstacles = obstacles.filter(obs => obs !== obstacle);
+                            obstacles = obstacles.filter(function(obs) { return obs !== obstacle; });
                             clearInterval(checkCollision);
                         }
                     }, 10);
@@ -352,32 +309,29 @@
             }, gameSpeed);
         }
 
-        // Zıplama
         function jump() {
             if (!isJumping && !isGameOver) {
                 isJumping = true;
                 player.classList.add('jumping');
                 
-                setTimeout(() => {
+                setTimeout(function() {
                     player.classList.remove('jumping');
                     isJumping = false;
                 }, 500);
             }
         }
 
-        // Oyun bitti
         function gameOver() {
             isGameOver = true;
             clearInterval(obstacleInterval);
             clearInterval(scoreInterval);
             
-            // Yüksek skor kontrolü
             if (score > highScore) {
                 highScore = score;
                 try {
                     localStorage.setItem('dinoHighScore', highScore);
                 } catch (e) {
-                    console.log('localStorage kaydetme hatası');
+                    // ignore
                 }
                 highScoreDisplay.textContent = highScore;
             }
@@ -387,37 +341,34 @@
             gameOverScreen.style.display = 'block';
         }
 
-        // Oyunu yeniden başlat
         function restartGame() {
             clearInterval(obstacleInterval);
             clearInterval(scoreInterval);
-            obstacles.forEach(obs => obs.remove());
+            for (var i = 0; i < obstacles.length; i++) {
+                obstacles[i].remove();
+            }
             obstacles = [];
             startGame();
         }
 
-        // Kontroller
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', function(e) {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
                 e.preventDefault();
                 jump();
             }
         });
 
-        // Mobil dokunma kontrolü
-        gameArea.addEventListener('touchstart', (e) => {
+        gameArea.addEventListener('touchstart', function(e) {
             e.preventDefault();
             jump();
         });
 
-        // Tıklama kontrolü
-        gameArea.addEventListener('click', () => {
+        gameArea.addEventListener('click', function() {
             if (!isGameOver) {
                 jump();
             }
         });
 
-        // Oyunu başlat
         startGame();
     </script>
 </body>
