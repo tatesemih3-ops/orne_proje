@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Oyunu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 900px;
+            width: 90%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(to bottom, #fff 0%, #f0f0f0 100%);
+            border: 3px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20px;
+            background: repeating-linear-gradient(
+                90deg,
+                #333 0px,
+                #333 20px,
+                #555 20px,
+                #555 40px
+            );
+        }
+
+        .player {
+            position: absolute;
+            bottom: 70px;
+            left: 50px;
+            width: 50px;
+            height: 50px;
+            background: #ff6b6b;
+            border-radius: 5px;
+            transition: bottom 0.1s linear;
+        }
+
+        .player::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            width: 15px;
+            height: 15px;
+            background: #ff6b6b;
+            border-radius: 50%;
+        }
+
+        .player::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .obstacle {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 30px;
+            height: 50px;
+            background: #4ecdc4;
+            border-radius: 5px;
+            animation: moveObstacle 2s linear infinite;
+        }
+
+        .obstacle::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #45b7aa;
+            border-radius: 3px;
+        }
+
+        @keyframes moveObstacle {
+            0% {
+                right: -30px;
+            }
+            100% {
+                right: 100%;
+            }
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 10;
+        }
+
+        .game-over h2 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #ff6b6b;
+        }
+
+        .game-over p {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+
+        .restart-btn {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .restart-btn:hover {
+            background: #45b7aa;
+            transform: scale(1.05);
+        }
+
+        .restart-btn:active {
+            transform: scale(0.95);
+        }
+
+        .high-score {
+            color: #ffd700;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        .jumping {
+            animation: jump 0.5s ease-in-out;
+        }
+
+        @keyframes jump {
+            0%, 100% {
+                bottom: 70px;
+            }
+            50% {
+                bottom: 200px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .game-area {
+                height: 250px;
+            }
+            
+            .controls {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🦖 Dino Oyunu 🦖</h1>
+        
+        <div class="game-area" id="gameArea">
+            <div class="player" id="player"></div>
+            <div class="ground"></div>
+            <div class="game-over" id="gameOver">
+                <h2>Oyun Bitti!</h2>
+                <p>Skorunuz: <span id="finalScore">0</span></p>
+                <p class="high-score">En Yüksek Skor: <span id="displayHighScore">0</span></p>
+                <button class="restart-btn" onclick="restartGame()">Tekrar Oyna</button>
+            </div>
+        </div>
+
+        <div class="score-board">
+            <div class="score">Skor: <span id="score">0</span></div>
+            <div class="score">En Yüksek: <span id="highScore">0</span></div>
+        </div>
+
+        <div class="controls">
+            ⌨️ Zıplamak için <strong>SPACE</strong> veya <strong>↑</strong> tuşuna basın
+            <br>
+            📱 Mobilde ekrana dokunun
+        </div>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const gameArea = document.getElementById('gameArea');
+        const gameOverScreen = document.getElementById('gameOver');
+        const scoreDisplay = document.getElementById('score');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const highScoreDisplay = document.getElementById('highScore');
+        const displayHighScoreElement = document.getElementById('displayHighScore');
+
+        let isJumping = false;
+        let isGameOver = false;
+        let score = 0;
+        let highScore = localStorage.getItem('dinoHighScore') || 0;
+        let obstacleInterval;
+        let scoreInterval;
+        let gameSpeed = 2000;
+        let obstacles = [];
+
+        // Yüksek skoru göster
+        highScoreDisplay.textContent = highScore;
+
+        // Oyun başlat
+        function startGame() {
+            score = 0;
+            isGameOver = false;
+            gameSpeed = 2000;
+            obstacles = [];
+            scoreDisplay.textContent = score;
+            gameOverScreen.style.display = 'none';
+            
+            // Varolan engelleri temizle
+            document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+            
+            // Skor artırma
+            scoreInterval = setInterval(() => {
+                if (!isGameOver) {
+                    score++;
+                    scoreDisplay.textContent = score;
+                    
+                    // Oyunu zorlaştır
+                    if (score % 100 === 0 && gameSpeed > 1000) {
+                        gameSpeed -= 100;
+                        clearInterval(obstacleInterval);
+                        createObstacles();
+                    }
+                }
+            }, 100);
+            
+            // Engel oluşturma
+            createObstacles();
+        }
+
+        // Engel oluştur
+        function createObstacles() {
+            obstacleInterval = setInterval(() => {
+                if (!isGameOver) {
+                    const obstacle = document.createElement('div');
+                    obstacle.classList.add('obstacle');
+                    obstacle.style.animation = `moveObstacle ${gameSpeed / 1000}s linear infinite`;
+                    gameArea.appendChild(obstacle);
+                    obstacles.push(obstacle);
+                    
+                    // Çarpışma kontrolü
+                    const checkCollision = setInterval(() => {
+                        const playerRect = player.getBoundingClientRect();
+                        const obstacleRect = obstacle.getBoundingClientRect();
+                        
+                        if (
+                            playerRect.left < obstacleRect.right &&
+                            playerRect.right > obstacleRect.left &&
+                            playerRect.bottom > obstacleRect.top &&
+                            playerRect.top < obstacleRect.bottom
+                        ) {
+                            gameOver();
+                            clearInterval(checkCollision);
+                        }
+                        
+                        // Engel ekrandan çıktıysa temizle
+                        if (obstacleRect.right < 0) {
+                            obstacle.remove();
+                            obstacles = obstacles.filter(obs => obs !== obstacle);
+                            clearInterval(checkCollision);
+                        }
+                    }, 10);
+                }
+            }, gameSpeed);
+        }
+
+        // Zıplama
+        function jump() {
+            if (!isJumping && !isGameOver) {
+                isJumping = true;
+                player.classList.add('jumping');
+                
+                setTimeout(() => {
+                    player.classList.remove('jumping');
+                    isJumping = false;
+                }, 500);
+            }
+        }
+
+        // Oyun bitti
+        function gameOver() {
+            isGameOver = true;
+            clearInterval(obstacleInterval);
+            clearInterval(scoreInterval);
+            
+            // Yüksek skor kontrolü
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('dinoHighScore', highScore);
+                highScoreDisplay.textContent = highScore;
+            }
+            
+            finalScoreDisplay.textContent = score;
+            displayHighScoreElement.textContent = highScore;
+            gameOverScreen.style.display = 'block';
+        }
+
+        // Oyunu yeniden başlat
+        function restartGame() {
+            clearInterval(obstacleInterval);
+            clearInterval(scoreInterval);
+            obstacles.forEach(obs => obs.remove());
+            obstacles = [];
+            startGame();
+        }
+
+        // Kontroller
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                jump();
+            }
+        });
+
+        // Mobil dokunma kontrolü
+        gameArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            jump();
+        });
+
+        // Tıklama kontrolü
+        gameArea.addEventListener('click', () => {
+            if (!isGameOver) {
+                jump();
+            }
+        });
+
+        // Oyunu başlat
+        startGame();
+    </script>
+</body>
+</html>
