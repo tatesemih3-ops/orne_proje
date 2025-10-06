@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Oyunu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="score-container">
+            <div class="score">Skor: <span id="score">0</span></div>
+            <div class="high-score">En Yüksek: <span id="highScore">0</span></div>
+        </div>
+        
+        <div id="game" class="game">
+            <div id="dino" class="dino"></div>
+            <div id="ground" class="ground"></div>
+        </div>
+        
+        <div id="gameOver" class="game-over hidden">
+            <h2>Oyun Bitti!</h2>
+            <p>Skorunuz: <span id="finalScore">0</span></p>
+            <p class="instruction">Tekrar oynamak için SPACE veya tıklayın</p>
+        </div>
+        
+        <div id="startScreen" class="start-screen">
+            <h1>🦖 Dino Oyunu</h1>
+            <p class="instruction">Başlamak için SPACE tuşuna basın veya tıklayın</p>
+            <p class="controls">⬆️ Zıplamak için SPACE veya ↑ tuşu</p>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
