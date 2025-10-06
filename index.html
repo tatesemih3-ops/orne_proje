@@ -232,7 +232,7 @@
 </head>
 <body>
     <div class="game-container">
-        <h1>🦖 Dino Oyunu 🦖</h1>
+        <h1>Dino Oyunu</h1>
         
         <div class="game-area" id="gameArea">
             <div class="player" id="player"></div>
@@ -251,9 +251,9 @@
         </div>
 
         <div class="controls">
-            ⌨️ Zıplamak için <strong>SPACE</strong> veya <strong>↑</strong> tuşuna basın
+            Zıplamak için <strong>SPACE</strong> veya <strong>Yukari OK</strong> tuşuna basın
             <br>
-            📱 Mobilde ekrana dokunun
+            Mobilde ekrana dokunun
         </div>
     </div>
 
@@ -269,11 +269,18 @@
         let isJumping = false;
         let isGameOver = false;
         let score = 0;
-        let highScore = localStorage.getItem('dinoHighScore') || 0;
+        let highScore = 0;
         let obstacleInterval;
         let scoreInterval;
         let gameSpeed = 2000;
         let obstacles = [];
+
+        // localStorage'ı güvenli şekilde kullan
+        try {
+            highScore = localStorage.getItem('dinoHighScore') || 0;
+        } catch (e) {
+            console.log('localStorage kullanılamıyor, varsayılan değer kullanılıyor');
+        }
 
         // Yüksek skoru göster
         highScoreDisplay.textContent = highScore;
@@ -367,7 +374,11 @@
             // Yüksek skor kontrolü
             if (score > highScore) {
                 highScore = score;
-                localStorage.setItem('dinoHighScore', highScore);
+                try {
+                    localStorage.setItem('dinoHighScore', highScore);
+                } catch (e) {
+                    console.log('localStorage kaydetme hatası');
+                }
                 highScoreDisplay.textContent = highScore;
             }
             
